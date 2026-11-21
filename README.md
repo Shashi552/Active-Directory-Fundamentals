@@ -36,13 +36,15 @@ flowchart TD
 
 | Module | Core Topic | What You Learn | Why You Must Learn It |
 | :--- | :--- | :--- | :--- |
-| [**Module 0**](docs/Module-00-Windows-Administration-and-AD-Basics.md) | **Windows Admin & AD Basics** | Workgroup vs. Domain, SAM file vs. `ntds.dit`, SIDs, RIDs, and Admin Scopes | Establishes ground-level understanding of Windows identity before attacking it. |
+| [**Module 0**](docs/Module-00-Windows-Administration-and-AD-Basics.md) | **Windows Admin & AD Basics** | Workgroup vs. Domain, SAM file vs. , SIDs, RIDs, and Admin Scopes | Establishes ground-level understanding of Windows identity before attacking it. |
 | [**Module 1**](docs/Module-01-Architecture-and-Foundations.md) | **Architecture & Foundations** | Forests, Trees, Domains, FSMO Roles, Global Catalog, LDAP & DNS | Forms the structural skeleton of enterprise Windows networks. |
-| [**Module 2**](docs/Module-02-Authentication-and-Kerberos.md) | **Authentication Protocols** | NTLMv2, Kerberos 3-way exchange, TGT, TGS, PAC validation | Essential for understanding how identity is verified and ticket-based attacks operate. |
+| [**Module 2**](docs/Module-02-Authentication-and-Kerberos.md) | **Authentication Protocols** | NTLMv2, Kerberos 3-Way Handshake, TGT, TGS, and PAC Validation | Essential for understanding how identity is verified and ticket-based attacks operate. |
 | [**Module 3**](docs/Module-03-Enumeration-and-Attack-Graphs.md) | **Enumeration & Graph Theory** | Native queries, PowerView, SharpHound, BloodHound path analysis | Modern assessments rely on finding derivative relationships rather than single exploits. |
 | [**Module 4**](docs/Module-04-Credential-Attacks-and-Delegation.md) | **Credentials & Delegation** | AS-REP Roasting, Kerberoasting, Unconstrained & Constrained Delegation | Exploits architectural protocol features rather than software bugs. |
 | [**Module 5**](docs/Module-05-Privilege-Escalation-and-Domain-Dominance.md) | **PrivEsc & Dominance** | ACL Abuse (GenericAll/WriteDacl), LAPS, DCSync, Ticket Forgery | Teaches how attackers turn a single domain user into a Domain Administrator. |
-| [**Module 6**](docs/Module-06-Defensive-Hardening-and-Detection.md) | **Defense & Enterprise Tiering** | Microsoft Enterprise Access Model, Tier 0 Isolation, Windows Event IDs | Prepares you to architect resilient identity environments and audit security posture. |
+| [**Module 6**](docs/Module-06-Defensive-Hardening-and-Detection.md) | **Enterprise Defense & Hardening** | Microsoft Enterprise Access Model, Tier 0 Isolation, Windows Event IDs | Prepares you to architect resilient identity environments and audit security posture. |
+| [**Module 7**](docs/Module-07-TCM-Security-Practical-Methodology.md) | **TCM Security & PNPT Practical Flow** | Zero-credential initial footholds, LLMNR/NBT-NS, SMB relay, mitm6, and lateral movement | Real-world black-box internal penetration testing framework. |
+| [**Attack Matrix**](docs/Active-Directory-Attack-Matrix-and-References.md) | **Master Technique & Reference Matrix** | Complete 6-phase attack lifecycle, syntax (Impacket, Rubeus, BloodHound, Certipy), Event IDs | The ultimate desktop reference mapping all techniques, tools, and detections. |
 
 ---
 
