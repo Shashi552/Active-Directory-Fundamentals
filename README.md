@@ -50,8 +50,40 @@ flowchart TD
 
 ---
 
-## 📖 Complete Master Textbooks (PDF Manuals)
+## 📖 Full 17-Page Master Textbook (Direct Browser View)
 
-This repository includes two publication-grade PDF textbooks compiled with vector typography, embedded architecture diagrams, and formal chapter numbering:
-* 📘 **[Active_Directory_Master_Textbook.pdf](Active_Directory_Master_Textbook.pdf)**: 17-Page Comprehensive Enterprise Reference Volume (incorporating all 8 core parts, diagrams, and war stories).
-* 📄 **[Active_Directory_Security_Course.pdf](Active_Directory_Security_Course.pdf)**: Companion Quick-Reference Study Manual.
+> **No Download Required**: View the entire publication-grade 17-page master volume directly in GitHub.
+
+* 📚 [**Open the Complete 17-Page Master Visual Reader (MASTER_TEXTBOOK.md)**](MASTER_TEXTBOOK.md)
+* 📥 [**Download the Raw Master PDF (Active_Directory_Master_Textbook.pdf)**](Active_Directory_Master_Textbook.pdf)
+
+### 📑 Individual Page Quick Links
+| Page | Chapter / Topic | Direct Image Link |
+| :---: | :--- | :---: |
+| **01** | Cover Page & Architecture Overview | [View Page 1](assets/textbook_pages/page_01.png) |
+| **02** | Preface & Course Philosophy | [View Page 2](assets/textbook_pages/page_02.png) |
+| **03** | Part I Divider: Foundations & Identity | [View Page 3](assets/textbook_pages/page_03.png) |
+| **04** | Chapter 1: Ground-Level Windows Systems Administration | [View Page 4](assets/textbook_pages/page_04.png) |
+| **05** | Chapter 2: Forest, Domain & Trust Architecture | [View Page 5](assets/textbook_pages/page_05.png) |
+| **06** | Part II Divider: Authentication Internals | [View Page 6](assets/textbook_pages/page_06.png) |
+| **07** | Chapter 3: NTLM Authentication & Relaying | [View Page 7](assets/textbook_pages/page_07.png) |
+| **08** | Chapter 4: Kerberos Protocol & PAC Verification | [View Page 8](assets/textbook_pages/page_08.png) |
+| **09** | Part III Divider: Attack Graphs & Enumeration | [View Page 9](assets/textbook_pages/page_09.png) |
+| **10** | Chapter 5: Active Directory Enumeration & BloodHound | [View Page 10](assets/textbook_pages/page_10.png) |
+| **11** | Part IV Divider: Credential Attacks & Delegation | [View Page 11](assets/textbook_pages/page_11.png) |
+| **12** | Chapter 6: AS-REP Roasting & Kerberoasting | [View Page 12](assets/textbook_pages/page_12.png) |
+| **13** | Chapter 7: Active Directory Certificate Services (AD CS) | [View Page 13](assets/textbook_pages/page_13.png) |
+| **14** | Part V Divider: PrivEsc & Dominance | [View Page 14](assets/textbook_pages/page_14.png) |
+| **15** | Chapter 8: Privilege Escalation, DCSync & Golden Tickets | [View Page 15](assets/textbook_pages/page_15.png) |
+| **16** | Chapters 9 & 10: TCM Security PNPT Flow & Defense | [View Page 16](assets/textbook_pages/page_16.png) |
+| **17** | Chapter 11: Real-World Penetration Testing War Stories | [View Page 17](assets/textbook_pages/page_17.png) |
+
+---
+
+## 📖 Complete Master Textbooks (Direct Browser View & Download)
+
+> **Zero Download Required**: Anyone can read the entire 17-page publication manual directly in their web browser with full zoom and page thumbnails.
+
+* 🌐 [**👉 Read Full 17-Page Master Textbook Online in Browser (Instant Web Viewer - No Download)**](https://docs.google.com/viewer?url=https://raw.githubusercontent.com/Shashi552/Active-Directory-Fundamentals/main/Active_Directory_Master_Textbook.pdf)
+* 📄 [**View Raw PDF File in Repository (Active_Directory_Master_Textbook.pdf)**](Active_Directory_Master_Textbook.pdf)
+* 📘 [**Companion Study Manual (Active_Directory_Security_Course.pdf)**](Active_Directory_Security_Course.pdf)
