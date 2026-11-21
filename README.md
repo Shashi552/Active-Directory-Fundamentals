@@ -44,16 +44,19 @@ flowchart TD
 | [**Module 5**](docs/Module-05-Privilege-Escalation-and-Domain-Dominance.md) | **PrivEsc & Dominance** | ACL Abuse (GenericAll/WriteDacl), LAPS, DCSync, Ticket Forgery | Teaches how attackers turn a single domain user into a Domain Administrator. |
 | [**Module 6**](docs/Module-06-Defensive-Hardening-and-Detection.md) | **Enterprise Defense & Hardening** | Microsoft Enterprise Access Model, Tier 0 Isolation, Windows Event IDs | Prepares you to architect resilient identity environments and audit security posture. |
 | [**Module 7**](docs/Module-07-TCM-Security-Practical-Methodology.md) | **TCM Security & PNPT Practical Flow** | Zero-credential initial footholds, LLMNR/NBT-NS, SMB relay, mitm6, and lateral movement | Real-world black-box internal penetration testing framework. |
+| [**Module 8**](docs/Module-08-Real-World-Case-Studies-and-War-Stories.md) | **Red Team War Stories & Case Studies** | SCF zero-click share traps, unconstrained delegation hospital compromise, noPac DC takeover, Trimarc field data | Real-life field experiences from senior penetration testers and red team engagements. |
 | [**Attack Matrix**](docs/Active-Directory-Attack-Matrix-and-References.md) | **Master Technique & Reference Matrix** | Complete 6-phase attack lifecycle, syntax (Impacket, Rubeus, BloodHound, Certipy), Event IDs | The ultimate desktop reference mapping all techniques, tools, and detections. |
 
 ---
 
-## 🧪 Recommended Practice Labs
+## 🔬 Hands-On Practice Labs & Console Sessions
 
-Before practicing, set up an isolated homelab or use pre-configured open-source Active Directory environments:
-1. **Game of Active Directory (GOAD)**: Multi-domain, multi-forest lab with automated Vagrant/Terraform deployment.
-2. **DetectionLab**: Pre-configured with Windows Domain Controller, WEF/WEC, and Splunk for threat hunting.
-3. **ADFS / Azure AD Connect Lab**: For hybrid identity exploration.
+| Lab Walkthrough | Focus Area | Live Tool Outputs Included |
+| :--- | :--- | :--- |
+| [**Lab 1: LLMNR Poisoning & Cracking**](labs/Lab-01-LLMNR-Poisoning-and-Hash-Cracking.md) | Network Broadcast Abuse | Responder console output, NetNTLMv2 capture, Hashcat mode 5600 |
+| [**Lab 2: Kerberoasting & Service Tickets**](labs/Lab-02-Kerberoasting-and-TGS-Extraction.md) | Kerberos Protocol Exploitation | Impacket GetUserSPNs, TGS structure dissection, Hashcat mode 13100 |
+| [**Lab 3: DCSync & Domain Dominance**](labs/Lab-03-DCSync-and-Domain-Dominance.md) | MS-DRSR Replication & Persistence | Secretsdump NTDS.dit extraction, Golden Ticket forgery with ticketer |
+| [**Lab Setup: Game of Active Directory**](labs/Lab-Setup-Guide-GOAD.md) | Homelab Deployment | Step-by-step Vagrant & VirtualBox deployment of the 5-VM GOAD forest |
 
 ---
 
