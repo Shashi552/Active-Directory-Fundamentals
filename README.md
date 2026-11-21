@@ -1,67 +1,57 @@
-# 🛡️ Active Directory Security & Exploitation: Zero-to-Hero Curriculum
+# 🛡️ Active Directory Security & Exploitation: Zero-to-Hero Master Curriculum
 
-> A comprehensive, structured, module-by-module courseware and reference manual on Active Directory architecture, identity protocols, attack graph mechanics, and enterprise defense tiering.
-
----
-
-## 📌 Course Philosophy: The "Why Before How" Approach
-
-Active Directory (AD) powers identity and access management for over 90% of Fortune 1000 enterprises. Attempting to learn Active Directory security by memorizing tool commands leads to fragile knowledge. This curriculum is engineered around **first-principles understanding**:
-
-1. **Architecture First**: You cannot break or defend what you do not understand. Learn how Domain Controllers, LDAP, DNS, and Kerberos interact.
-2. **Protocol Mechanics**: Understand what happens on the wire during authentication (tickets, PAC, SPNs, session keys).
-3. **Graph Theory & Trust Relationships**: Understand that modern AD security is not about vulnerabilities—it is about relationships and unintended permissions (ACLs).
-4. **Defense in Parallel**: Every single exposure vector is accompanied by its corresponding detection signature and hardening configuration.
+> An exhaustive, university-grade courseware, practical operator playbook, and reference textbook covering Windows operating system internals, Kerberos protocol mechanics, BloodHound graph theory, AD CS exploitation, DCSync replication, and zero-trust defensive tiering.
 
 ---
 
-## 🗺️ Progressive Learning Roadmap
+## 🗺️ The Step-by-Step Practical Learning Pathway
+
+Follow this sequential 8-phase pathway to progress from zero Windows knowledge to enterprise-grade penetration testing and defensive engineering proficiency.
 
 ```mermaid
 flowchart TD
-    M0["Module 0: Windows Admin & AD Core Concepts<br/>(SAM vs NTDS, SIDs, Local vs Domain Admins)"]
-    M1["Module 1: AD Architecture & Foundations<br/>(Forests, Domains, FSMO, GPOs, LDAP)"]
-    M2["Module 2: Authentication Protocols<br/>(NTLM, Kerberos 3-Way Handshake, PAC)"]
-    M3["Module 3: Enumeration & Attack Graphs<br/>(RPC, LDAP, BloodHound Graph Theory)"]
-    M4["Module 4: Credential & Delegation Vectors<br/>(AS-REP Roasting, Kerberoasting, Delegation)"]
-    M5["Module 5: PrivEsc & Domain Dominance<br/>(ACL Abuse, DCSync, Golden/Silver Tickets)"]
-    M6["Module 6: Enterprise Defense & Hardening<br/>(Tiering Models, Protected Users, Event IDs)"]
+    P1["🟢 Phase 1: OS & Identity Foundations<br/>(Windows Internals, SAM vs NTDS, SIDs, FSMO)"]
+    P2["🟡 Phase 2: Unauthenticated Footholds<br/>(LLMNR/NBT-NS Poisoning, SMB Relay, mitm6)"]
+    P3["🟠 Phase 3: Protocol Internals & Graphs<br/>(Kerberos 3-Way Exchange, BloodHound Cypher)"]
+    P4["🔴 Phase 4: Credential & Delegation Attacks<br/>(AS-REP Roasting, Kerberoasting, RBCD)"]
+    P5["🟣 Phase 5: AD CS PKI Exploitation<br/>(Certificate Templates, ESC1 - ESC8)"]
+    P6["🟤 Phase 6: Domain Dominance & Persistence<br/>(ACL Abuse, DCSync, Golden/Silver Tickets)"]
+    P7["🔵 Phase 7: Real-World Tradecraft & Playbook<br/>(War Stories, Operator Flag Dissection)"]
+    P8["🛡️ Phase 8: Enterprise Defense & Tiering<br/>(Enterprise Access Model, Tier 0, Event IDs)"]
 
-    M0 --> M1 --> M2 --> M3 --> M4 --> M5 --> M6
+    P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
 ```
 
 ---
 
-## 📚 Curriculum Breakdown
+## 🚦 Phase-by-Phase Course Roadmap
 
-| Module | Core Topic | What You Learn | Why You Must Learn It |
-| :--- | :--- | :--- | :--- |
-| [**Module 0**](docs/Module-00-Windows-Administration-and-AD-Basics.md) | **Windows Admin & AD Basics** | Workgroup vs. Domain, SAM file vs. , SIDs, RIDs, and Admin Scopes | Establishes ground-level understanding of Windows identity before attacking it. |
-| [**Module 1**](docs/Module-01-Architecture-and-Foundations.md) | **Architecture & Foundations** | Forests, Trees, Domains, FSMO Roles, Global Catalog, LDAP & DNS | Forms the structural skeleton of enterprise Windows networks. |
-| [**Module 2**](docs/Module-02-Authentication-and-Kerberos.md) | **Authentication Protocols** | NTLMv2, Kerberos 3-Way Handshake, TGT, TGS, and PAC Validation | Essential for understanding how identity is verified and ticket-based attacks operate. |
-| [**Module 3**](docs/Module-03-Enumeration-and-Attack-Graphs.md) | **Enumeration & Graph Theory** | Native queries, PowerView, SharpHound, BloodHound path analysis | Modern assessments rely on finding derivative relationships rather than single exploits. |
-| [**Module 4**](docs/Module-04-Credential-Attacks-and-Delegation.md) | **Credentials & Delegation** | AS-REP Roasting, Kerberoasting, Unconstrained & Constrained Delegation | Exploits architectural protocol features rather than software bugs. |
-| [**Module 5**](docs/Module-05-Privilege-Escalation-and-Domain-Dominance.md) | **PrivEsc & Dominance** | ACL Abuse (GenericAll/WriteDacl), LAPS, DCSync, Ticket Forgery | Teaches how attackers turn a single domain user into a Domain Administrator. |
-| [**Module 6**](docs/Module-06-Defensive-Hardening-and-Detection.md) | **Enterprise Defense & Hardening** | Microsoft Enterprise Access Model, Tier 0 Isolation, Windows Event IDs | Prepares you to architect resilient identity environments and audit security posture. |
-| [**Module 7**](docs/Module-07-TCM-Security-Practical-Methodology.md) | **TCM Security & PNPT Practical Flow** | Zero-credential initial footholds, LLMNR/NBT-NS, SMB relay, mitm6, and lateral movement | Real-world black-box internal penetration testing framework. |
-| [**Module 8**](docs/Module-08-Real-World-Case-Studies-and-War-Stories.md) | **Red Team War Stories & Case Studies** | SCF zero-click share traps, unconstrained delegation hospital compromise, noPac DC takeover, Trimarc field data | Real-life field experiences from senior penetration testers and red team engagements. |
-| [**Module 9**](docs/Module-09-Windows-Internals-File-and-Memory-Architecture.md) | **Windows Internals & Memory Architecture** | User Mode vs Kernel Mode, PEB/TEB, LSASS SSPs, RunAsPPL, Credential Guard, NTFS ADS & VSS | Deep low-level operating system internals, memory structures, and file systems. |
-| [**Operator Playbook**](docs/Active-Directory-Field-Operator-Playbook.md) | **Exhaustive Tool & Flag Dissection** | Impacket, Rubeus, Mimikatz, Certipy, NetExec flag-by-flag breakdowns, OPSEC, troubleshooting | Real-world execution details, flag mechanics, and avoiding common field failures. |
-| [**Attack Matrix**](docs/Active-Directory-Attack-Matrix-and-References.md) | **Master Technique & Reference Matrix** | Complete 6-phase attack lifecycle, syntax (Impacket, Rubeus, BloodHound, Certipy), Event IDs | The ultimate desktop reference mapping all techniques, tools, and detections. |
+| Phase Indicator | Stage Name | Included Modules & Labs | Difficulty | Focus & Core Milestone |
+| :---: | :--- | :--- | :---: | :--- |
+| **🟢 PHASE 1** | **OS & Identity Foundations** | [**Module 0**](docs/Module-00-Windows-Administration-and-AD-Basics.md)<br/>[**Module 1**](docs/Module-01-Architecture-and-Foundations.md)<br/>[**Module 9**](docs/Module-09-Windows-Internals-File-and-Memory-Architecture.md) | **Beginner** | Understand the Workgroup vs Domain model, the SAM database vs `ntds.dit`, SIDs, RIDs, User vs Kernel Mode (Ring 3 vs Ring 0), and LSASS memory architecture. |
+| **🟡 PHASE 2** | **Initial Footholds & Poisoning** | [**Module 7**](docs/Module-07-TCM-Security-Practical-Methodology.md)<br/>[**Lab 1**](labs/Lab-01-LLMNR-Poisoning-and-Hash-Cracking.md) | **Beginner-Int** | Obtain an initial foothold from zero credentials. Master LLMNR/NBT-NS poisoning with Responder, SMB relaying with `ntlmrelayx`, and Hashcat mode 5600. |
+| **🟠 PHASE 3** | **Kerberos Internals & Attack Graphs** | [**Module 2**](docs/Module-02-Authentication-and-Kerberos.md)<br/>[**Module 3**](docs/Module-03-Enumeration-and-Attack-Graphs.md) | **Intermediate** | Dissect the Kerberos 3-way handshake (AS, TGS, AP exchanges), PAC structure, and map shortest paths to Domain Admin using BloodHound & SharpHound. |
+| **🔴 PHASE 4** | **Credential & Delegation Attacks** | [**Module 4**](docs/Module-04-Credential-Attacks-and-Delegation.md)<br/>[**Lab 2**](labs/Lab-02-Kerberoasting-and-TGS-Extraction.md) | **Intermediate** | Request and crack service tickets (Kerberoasting), exploit pre-authentication (AS-REP Roasting), and abuse Unconstrained, Constrained, and RBCD delegation. |
+| **🟣 PHASE 5** | **AD Certificate Services (AD CS)** | [**Module 5**](docs/Module-05-Privilege-Escalation-and-Domain-Dominance.md)<br/>[**Attack Matrix**](docs/Active-Directory-Attack-Matrix-and-References.md) | **Advanced** | Audit Active Directory PKI using Certipy. Weaponize misconfigured certificate templates (ESC1 SAN abuse, ESC4 ACL abuse, ESC8 Web Enrollment NTLM relay). |
+| **🟤 PHASE 6** | **PrivEsc, DCSync & Forest Dominance** | [**Module 5**](docs/Module-05-Privilege-Escalation-and-Domain-Dominance.md)<br/>[**Lab 3**](labs/Lab-03-DCSync-and-Domain-Dominance.md) | **Advanced** | Exploit directory ACLs (`GenericAll`, `WriteDacl`), simulate DC replication via DCSync (`secretsdump.py`), and forge Golden Tickets using the `krbtgt` key. |
+| **🔵 PHASE 7** | **Operator Tradecraft & War Stories** | [**Module 8**](docs/Module-08-Real-World-Case-Studies-and-War-Stories.md)<br/>[**Operator Playbook**](docs/Active-Directory-Field-Operator-Playbook.md) | **Expert** | Study real-world enterprise breaches (zero-click SCF share traps, hospital ransomware simulations). Master exact tool flags for Impacket, Rubeus, and Mimikatz. |
+| **🛡️ PHASE 8** | **Enterprise Defense & Zero Trust** | [**Module 6**](docs/Module-06-Defensive-Hardening-and-Detection.md)<br/>[**Attack Matrix**](docs/Active-Directory-Attack-Matrix-and-References.md) | **Architect** | Implement Microsoft's Enterprise Access Model, Tier 0 isolation, Privileged Access Workstations (PAWs), Protected Users, and SIEM Event ID detection. |
 
 ---
 
-## 🔬 Hands-On Practice Labs & Console Sessions
+## 🔬 Hands-On Practice Labs & Field Artifacts
 
-| Lab Walkthrough | Focus Area | Live Tool Outputs Included |
+| Lab Guide | Target Technology | Real-World Console Artifacts Included |
 | :--- | :--- | :--- |
-| [**Lab 1: LLMNR Poisoning & Cracking**](labs/Lab-01-LLMNR-Poisoning-and-Hash-Cracking.md) | Network Broadcast Abuse | Responder console output, NetNTLMv2 capture, Hashcat mode 5600 |
-| [**Lab 2: Kerberoasting & Service Tickets**](labs/Lab-02-Kerberoasting-and-TGS-Extraction.md) | Kerberos Protocol Exploitation | Impacket GetUserSPNs, TGS structure dissection, Hashcat mode 13100 |
-| [**Lab 3: DCSync & Domain Dominance**](labs/Lab-03-DCSync-and-Domain-Dominance.md) | MS-DRSR Replication & Persistence | Secretsdump NTDS.dit extraction, Golden Ticket forgery with ticketer |
-| [**Lab Setup: Game of Active Directory**](labs/Lab-Setup-Guide-GOAD.md) | Homelab Deployment | Step-by-step Vagrant & VirtualBox deployment of the 5-VM GOAD forest |
+| [**Lab 1: LLMNR Poisoning & Cracking**](labs/Lab-01-LLMNR-Poisoning-and-Hash-Cracking.md) | Network Broadcast Abuse | Responder console session, NetNTLMv2 capture, Hashcat benchmark |
+| [**Lab 2: Kerberoasting & Service Tickets**](labs/Lab-02-Kerberoasting-and-TGS-Extraction.md) | Kerberos TGS Exploitation | Impacket GetUserSPNs output, ticket structure analysis, Hashcat mode 13100 |
+| [**Lab 3: DCSync & Domain Dominance**](labs/Lab-03-DCSync-and-Domain-Dominance.md) | MS-DRSR Replication Protocol | Secretsdump NTDS.dit extraction, Golden Ticket forgery with ticketer |
+| [**Homelab Setup: Game of Active Directory**](labs/Lab-Setup-Guide-GOAD.md) | Multi-Domain Forest Lab | Step-by-step Vagrant & VirtualBox deployment of the 5-VM GOAD environment |
 
 ---
 
-## 📖 PDF Guide Export
-The companion publication-ready PDF manual is compiled in this repository:
-- 📄 **[Active_Directory_Security_Course.pdf](Active_Directory_Security_Course.pdf)**
+## 📖 Complete Master Textbooks (PDF Manuals)
+
+This repository includes two publication-grade PDF textbooks compiled with vector typography, embedded architecture diagrams, and formal chapter numbering:
+* 📘 **[Active_Directory_Master_Textbook.pdf](Active_Directory_Master_Textbook.pdf)**: 17-Page Comprehensive Enterprise Reference Volume (incorporating all 8 core parts, diagrams, and war stories).
+* 📄 **[Active_Directory_Security_Course.pdf](Active_Directory_Security_Course.pdf)**: Companion Quick-Reference Study Manual.
