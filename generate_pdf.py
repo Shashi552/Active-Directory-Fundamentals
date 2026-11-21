@@ -200,6 +200,14 @@ def build_pdf():
     story.append(toc_table)
     story.append(Spacer(1, 15))
 
+
+    # ------------------ MODULE 0 ------------------
+    story.append(Paragraph("Module 0: Windows Systems Administration & Core Concepts", h1_style))
+    story.append(Paragraph("<b>1. What is Active Directory?</b> In a standalone <i>Workgroup</i>, every computer maintains its own isolated <code>SAM</code> (Security Account Manager) user database. Active Directory Domain Services (AD DS) eliminates this fragmentation by centralizing all identities, computers, and access control lists into a single master database named <code>ntds.dit</code> hosted on Domain Controllers (DCs).", body_style))
+    story.append(Paragraph("• <b>Local Accounts vs Domain Accounts:</b> Local accounts (e.g. <code>PC-01\Alice</code>) live in the local SAM and cannot access network resources. Domain accounts (e.g. <code>CORP\Alice</code>) live in <code>ntds.dit</code> and authenticate centrally via Kerberos across the entire forest.", bullet_style))
+    story.append(Paragraph("• <b>Security Identifiers (SIDs):</b> Windows tracks identity via binary SIDs. High-value built-in RIDs include <b>500</b> (Administrator), <b>502</b> (KRBTGT master KDC account), and <b>512</b> (Domain Admins group).", bullet_style))
+    story.append(Paragraph("• <b>Administrative Scopes:</b> A <i>Local Administrator</i> controls one machine. A <i>Domain Administrator</i> controls the domain and is automatically in the local Administrators group of all joined machines. An <i>Enterprise Administrator</i> controls the entire forest root.", bullet_style))
+    story.append(Spacer(1, 10))
     # ------------------ MODULE 1 ------------------
     story.append(Paragraph("Module 1: Active Directory Architecture & Foundations", h1_style))
     story.append(Paragraph("<b>1. What to Learn:</b> Active Directory Domain Services (AD DS) organizes identity across logical and physical boundaries. The <b>Forest</b> represents the ultimate security boundary, while <b>Domains</b> represent administrative boundaries. Key structural components include:", body_style))

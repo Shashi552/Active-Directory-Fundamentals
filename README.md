@@ -19,6 +19,7 @@ Active Directory (AD) powers identity and access management for over 90% of Fort
 
 ```mermaid
 flowchart TD
+    M0["Module 0: Windows Admin & AD Core Concepts<br/>(SAM vs NTDS, SIDs, Local vs Domain Admins)"]
     M1["Module 1: AD Architecture & Foundations<br/>(Forests, Domains, FSMO, GPOs, LDAP)"]
     M2["Module 2: Authentication Protocols<br/>(NTLM, Kerberos 3-Way Handshake, PAC)"]
     M3["Module 3: Enumeration & Attack Graphs<br/>(RPC, LDAP, BloodHound Graph Theory)"]
@@ -26,7 +27,7 @@ flowchart TD
     M5["Module 5: PrivEsc & Domain Dominance<br/>(ACL Abuse, DCSync, Golden/Silver Tickets)"]
     M6["Module 6: Enterprise Defense & Hardening<br/>(Tiering Models, Protected Users, Event IDs)"]
 
-    M1 --> M2 --> M3 --> M4 --> M5 --> M6
+    M0 --> M1 --> M2 --> M3 --> M4 --> M5 --> M6
 ```
 
 ---
@@ -35,6 +36,7 @@ flowchart TD
 
 | Module | Core Topic | What You Learn | Why You Must Learn It |
 | :--- | :--- | :--- | :--- |
+| [**Module 0**](docs/Module-00-Windows-Administration-and-AD-Basics.md) | **Windows Admin & AD Basics** | Workgroup vs. Domain, SAM file vs. `ntds.dit`, SIDs, RIDs, and Admin Scopes | Establishes ground-level understanding of Windows identity before attacking it. |
 | [**Module 1**](docs/Module-01-Architecture-and-Foundations.md) | **Architecture & Foundations** | Forests, Trees, Domains, FSMO Roles, Global Catalog, LDAP & DNS | Forms the structural skeleton of enterprise Windows networks. |
 | [**Module 2**](docs/Module-02-Authentication-and-Kerberos.md) | **Authentication Protocols** | NTLMv2, Kerberos 3-way exchange, TGT, TGS, PAC validation | Essential for understanding how identity is verified and ticket-based attacks operate. |
 | [**Module 3**](docs/Module-03-Enumeration-and-Attack-Graphs.md) | **Enumeration & Graph Theory** | Native queries, PowerView, SharpHound, BloodHound path analysis | Modern assessments rely on finding derivative relationships rather than single exploits. |
