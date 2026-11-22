@@ -113,9 +113,11 @@ When operating in real enterprise networks, commands fail due to time synchroniz
 | Error Code / Message               | Technical Root Cause               | Operational Troubleshooting & Fix       |
 +------------------------------------+------------------------------------+-----------------------------------------+
 | **KRB_AP_ERR_SKEW (0x25 / 37)**    | Clock skew between attack machine  | Synchronize attack box time to target DC|
-| "Clock skew too great"             | and Domain Controller exceeds      | rdate -n <DC_IP>   OR                   |
-|                                    | 5 minutes (300 seconds).           | ntpdate <DC_IP>    OR                   |
-|                                    |                                    | timedatectl set-ntp off && date -s ...  |
+| "Clock skew too great"             | and Domain Controller exceeds      | 1. rdate -n <DC_IP>  OR ntpdate <DC_IP> |
+|                                    | 5 minutes (300 seconds).           | 2. If UDP 123 (NTP) is firewalled, sync |
+|                                    |                                    |    via HTTP Date header:                |
+|                                    |                                    |    date -s "$(curl -sI http://<DC_IP>   |
+|                                    |                                    |    | grep -i Date: | cut -d' ' -f2-)"   |
 +------------------------------------+------------------------------------+-----------------------------------------+
 | **KDC_ERR_S_PRINCIPAL_UNKNOWN (7)**| The requested SPN does not exist   | Check SPN spelling. Verify SPN exists:  |
 | "Server not found in Kerberos db"  | or is assigned to multiple objects | ldapsearch ... "(servicePrincipalName=*)|
@@ -209,6 +211,50 @@ export KRB5CCNAME=ticket.ccache
 impacket-ticketConverter ticket.ccache ticket.kirbi
 ```
 
+---
+
+## 4. Network Packet Inspection & Display Filters (Wireshark & Tcpdump)
+
+When Kerberos or SMB authentication fails silently, packet inspection on the network interface confirms whether the Domain Controller received the packet, dropped it, or returned a Kerberos error code:
+
+```
++---------------------------------------------------------------------------------------+
+| ESSENTIAL ACTIVE DIRECTORY WIRESHARK & TCPDUMP DISPLAY FILTERS                        |
++--------------------------+------------------------------------------------------------+
+| Protocol / Inspection    | Wireshark Display Filter Syntax                            |
++--------------------------+------------------------------------------------------------+
+| **Kerberos AS-REQ**      | `kerberos.msg.type == 10`                                  |
+| (Initial Authentication) | Verifies client encryption types and PA-DATA timestamp.    |
++--------------------------+------------------------------------------------------------+
+| **Kerberos AS-REP**      | `kerberos.msg.type == 11`                                  |
+| (TGT Issuance)           | Confirms KDC issued the TGT.                               |
++--------------------------+------------------------------------------------------------+
+| **Kerberos TGS-REQ**     | `kerberos.msg.type == 12`                                  |
+| (Service Ticket Request) | Inspects requested SPN and ticket flags.                   |
++--------------------------+------------------------------------------------------------+
+| **Kerberos TGS-REP**     | `kerberos.msg.type == 13`                                  |
+| (Service Ticket Return)  | Verifies ticket encryption type (etype 23 vs 18).          |
++--------------------------+------------------------------------------------------------+
+| **Kerberos Errors**      | `kerberos.msg.type == 30`                                  |
+| (KRB-ERROR)              | Specifically filters: `kerberos.error_code == 37` (Clock   |
+|                          | Skew) or `kerberos.error_code == 7` (Unknown Principal).   |
++--------------------------+------------------------------------------------------------+
+| **SMB2 Negotiate**       | `smb2.cmd == 0`                                            |
+| (Dialect & Signing Check)| Inspects `SecurityMode` for `Signing Enabled` / `Required`.|
++--------------------------+------------------------------------------------------------+
+| **LDAP Search Filter**   | `ldap.protocolOp == 3`                                     |
+| (Directory Enumeration)  | Filters Active Directory object queries.                   |
++--------------------------+------------------------------------------------------------+
+```
+
+### Tcpdump Command Line Syntax for Headless Red Team Boxes:
+```bash
+# Capture all Kerberos port 88 traffic on interface eth0:
+sudo tcpdump -i eth0 -nn -s0 -v "port 88" -w kerberos_traffic.pcap
+
+# Capture LLMNR and NBT-NS broadcast resolution traffic:
+sudo tcpdump -i eth0 -nn "udp port 5355 or udp port 137"
+```
 
 ---
 

@@ -412,6 +412,62 @@ Credential Guard uses Microsoft Hyper-V hardware virtualization to isolate secre
   * **VTL 1 (Secure World)**: An isolated container inaccessible to VTL 0. It hosts `LSAIso.exe` (LSA Isolated).
 * **Security Result**: Even if an attacker compromises the Windows kernel (Ring 0) in VTL 0 or uses a kernel driver to dump `lsass.exe` memory, the master plaintext keys and Kerberos long-term secrets are **never** present in VTL 0 memory. The attacker only recovers encrypted handles or RPC proxies.
 
+---
+
+## 8. Local Administrator Password Management: Modern Windows LAPS vs. Legacy LAPS
+
+To eliminate local administrator password reuse across endpoints, Microsoft deployed two distinct architectures of the **Local Administrator Password Solution (LAPS)**. Understanding their internal storage mechanics is critical for credential extraction and post-exploitation.
+
+```
++---------------------------------------------------------------------------------------+
+| ARCHITECTURAL COMPARISON: LEGACY LAPS VS. MODERN WINDOWS LAPS (2023+)                 |
++----------------------+--------------------------------+-------------------------------+
+| Architectural Pillar | Legacy LAPS (AdmPwd.dll)       | Modern Windows LAPS (Native)  |
++----------------------+--------------------------------+-------------------------------+
+| **Integration**      | External MSI agent required    | Built natively into Win 10/11 |
+|                      | on every endpoint.             | and Server 2019/2022 (KB5025230)|
++----------------------+--------------------------------+-------------------------------+
+| **Directory Storage**| `ms-Mcs-AdmPwd` attribute      | `msLAPS-Password` attribute   |
+|                      | on computer object in AD.      | on computer object in AD.     |
++----------------------+--------------------------------+-------------------------------+
+| **Encryption**       | **CLEARTEXT** string in AD!    | **ENCRYPTED** via CNG / DPAPI |
+|                      | Anyone with read rights reads  | (Can only be decrypted by     |
+|                      | the raw plaintext password.    | authorized security groups).  |
++----------------------+--------------------------------+-------------------------------+
+| **Password History** | None. Only current password.   | `msLAPS-PasswordHistory` stores|
+|                      |                                | encrypted prior passwords.    |
++----------------------+--------------------------------+-------------------------------+
+| **DSRM Backup**      | Unsupported.                   | Supports automatic backup and |
+|                      |                                | rotation of DC DSRM passwords!|
++----------------------+--------------------------------+-------------------------------+
+| **Post-Use Rotation**| Expiration timer only.         | **Automatic Rotation** upon   |
+|                      |                                | local admin logon/logoff!     |
++----------------------+--------------------------------+-------------------------------+
+```
+
+### Enumeration & Exploitation Tradecraft:
+
+#### 1. Querying Legacy LAPS Cleartext Passwords:
+If the domain runs legacy LAPS and an attacker holds read permissions on computer objects:
+```powershell
+# Using PowerView:
+Get-DomainComputer -Properties ms-mcs-admpwd | Where-Object { $_.'ms-mcs-admpwd' -ne $null } | Select-Object name, ms-mcs-admpwd
+
+# Using ldapsearch:
+ldapsearch -x -H ldap://10.0.0.1 -b "DC=corp,DC=local" \
+  "(ms-Mcs-AdmPwd=*)" sAMAccountName ms-Mcs-AdmPwd
+```
+
+#### 2. Querying Modern Windows LAPS Encrypted Attributes:
+Modern Windows LAPS stores password blobs encrypted using the Active Directory domain root key. Members of the authorized administrative group decrypt it automatically:
+```powershell
+# Query Modern Windows LAPS password using RSAT:
+Get-LapsADPassword -Identity "WS01"
+
+# Query raw encrypted payload from msLAPS-Password:
+Get-ADComputer -Identity "WS01" -Properties msLAPS-Password, msLAPS-PasswordHistory
+```
+* **Red Team Perspective**: To decrypt modern Windows LAPS passwords offline, the attacker must compromise the **DPAPI Domain Backup Key** or the authorized decryption group's private key.
 
 ---
 

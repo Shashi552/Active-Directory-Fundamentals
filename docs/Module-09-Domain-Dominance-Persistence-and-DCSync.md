@@ -207,6 +207,19 @@ Created by Benjamin Delpy and Vincent Le Toux:
 * Pushes malicious directory changes (e.g., adding user to Domain Admins or setting SID History) to legitimate DCs via directory replication!
 * **Evasion**: Bypasses Active Directory object modification audit logs (`Event ID 5136`) because the changes arrive as legitimate replication streams rather than LDAP writes.
 
+### 4. DPAPI Domain Backup Key Extraction (`BCKUPKEY_P` / `Gkdi`):
+The Windows Data Protection API (DPAPI) encrypts sensitive user secrets (saved Chrome/Edge browser passwords, RDP connection strings, Wi-Fi profiles, and private certificates) on individual workstations.
+* **The Domain Recovery Mechanism**: To permit password resets without data loss, Windows wraps each user's DPAPI master key with the **Domain Controller's DPAPI Backup Key** via MS-BKRP (BackupKey Remote Protocol).
+* **The Master Compromise**: An attacker with Domain Administrator authority can remotely extract the domain's master DPAPI private key directly from the Domain Controller:
+  ```bash
+  # Remote extraction via Impacket:
+  impacket-dpapi backupkeys -u 'Administrator' -p 'Pass123!' -d 'corp.local' -dc-ip 10.0.0.1 --export
+
+  # Extraction via Mimikatz on a DC:
+  lsadump::backupkeys /target:dc01.corp.local /export
+  ```
+* **Impact**: Once the `.pvk` backup key is in the attacker's possession, the attacker can pull locked DPAPI master keys from **ANY endpoint across the entire enterprise** and decrypt all stored credentials offline without generating any endpoint security telemetry!
+
 ---
 
 ## 6. Remediating Domain Compromise: The 2-Step `krbtgt` Password Reset

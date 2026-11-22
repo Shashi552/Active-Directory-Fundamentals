@@ -174,6 +174,42 @@ Properties IN ("*{1131f6aa-9c07-11d1-f79f-00c04fc2dcd2}*", "*{1131f6ad-9c07-11d1
 ```
 * **Why it works**: Legitimate Domain Controllers have machine accounts ending in `$`. Any human user account (`SubjectUserName!="*$"`) requesting replication GUIDs `1131f6aa` or `1131f6ad` is **100% indicative of an ongoing DCSync attack**!
 
+---
+
+### 5. The Silent Telemetry Blind Spot: Mandatory SACLs for Event IDs 5136 & 4662
+
+A major enterprise vulnerability discovered in field audits is the **False Sense of Auditing Security**. Many enterprise SOCs enable:
+* `Computer Configuration -> Windows Settings -> Security Settings -> Advanced Audit Policy Configuration -> Audit Directory Service Access` = `Success and Failure`
+* `Audit Directory Service Changes` = `Success and Failure`
+
+**The Fatal Blind Spot**: Enabling these GPO policies alone will **NOT** generate Event ID 5136 (Directory Service Object Modified) or Event ID 4662 (Object Operation)! Active Directory relies strictly on object-level **System Access Control Lists (SACLs)**.
+If an administrator has not explicitly placed a SACL on `DC=corp,DC=local` or `AdminSDHolder`:
+1. An attacker can execute DCSync (`Get-Changes-All`).
+2. An attacker can backdoor `AdminSDHolder` or grant themselves `GenericAll`.
+3. **ZERO Event 5136 or 4662 logs will be written to the Security Event Log!** The intrusion remains completely invisible to the SIEM.
+
+#### Production Remediation: Enforcing Audit SACLs via PowerShell:
+```powershell
+# 1. Retrieve the Domain Root Container ACL:
+$domainDN = (Get-ADDomain).DistinguishedName
+$acl = Get-Acl "AD:\$domainDN"
+
+# 2. Define an Audit Rule for "Everyone" (S-1-1-0) covering high-risk rights:
+$identity = [System.Security.Principal.SecurityIdentifier]"S-1-1-0"
+$rights = [System.DirectoryServices.ActiveDirectoryRights]"WriteDacl, WriteOwner, ExtendedRight"
+$auditFlags = [System.Security.AccessControl.AuditFlags]"Success, Failure"
+
+$auditRule = New-Object System.DirectoryServices.ActiveDirectoryAuditRule(
+    $identity,
+    $rights,
+    $auditFlags
+)
+
+# 3. Commit the SACL to Active Directory:
+$acl.AddAuditRule($auditRule)
+Set-Acl -Path "AD:\$domainDN" -AclObject $acl
+```
+* Once committed, any modification to domain root DACLs or invocation of replication extended rights generates immediate, high-fidelity security event logs.
 
 ---
 

